@@ -1,0 +1,35 @@
+[project]
+name = "mysql-mcp-demo"
+version = "0.1.0"
+description = "GitHub Copilot MySQL MCP Server Demo with Python"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "mysql-connector-python>=8.0.0",
+    "mysql-mcp-server",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "black>=22.0.0",
+    "ruff>=0.1.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["mysql_mcp_demo"]
+
+[tool.black]
+line-length = 88
+target-version = ['py311']
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+
+[tool.uv.sources]
+mysql-mcp-server = { git = "https://github.com/designcomputer/mysql_mcp_server.git" }
