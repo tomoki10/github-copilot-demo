@@ -18,16 +18,17 @@ if ! command -v docker-compose &> /dev/null; then
     exit 1
 fi
 
-# Node.jsがインストールされているかチェック
-if ! command -v node &> /dev/null; then
-    echo "❌ Node.jsがインストールされていません。Node.jsをインストールしてください。"
-    exit 1
-fi
-
-# npmがインストールされているかチェック
-if ! command -v npm &> /dev/null; then
-    echo "❌ npmがインストールされていません。npmをインストールしてください。"
-    exit 1
+# uvがインストールされているかチェック
+if ! command -v uv &> /dev/null; then
+    echo "📦 uvをインストールしています..."
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    source ~/.bashrc || source ~/.zshrc || true
+    export PATH="$HOME/.local/bin:$PATH"
+    if ! command -v uv &> /dev/null; then
+        echo "❌ uvのインストールに失敗しました。手動でインストールしてください。"
+        exit 1
+    fi
+    echo "✅ uvのインストールが完了しました。"
 fi
 
 echo "✅ 前提条件のチェックが完了しました。"
@@ -37,18 +38,27 @@ echo ""
 echo "🧹 既存のMySQLコンテナをクリーンアップしています..."
 docker-compose down -v 2>/dev/null || true
 docker container rm mysql-mcp-demo 2>/dev/null || true
+
+# 既存のNode.js版MCPサーバーをアンインストール
+echo "🗑️  既存のNode.js版MCPサーバーをアンインストールしています..."
+npm uninstall -g mysql-mcp-universal 2>/dev/null || true
 echo "✅ クリーンアップが完了しました。"
 echo ""
 
-# MySQL MCPサーバーのインストール
-echo "📦 MySQL MCPサーバーをインストールしています..."
-npm install -g mysql-mcp-universal
+# Python環境の設定とMCPサーバーのインストール
+echo "� Python環境とMCPサーバーをセットアップしています..."
+
+# MySQL MCPサーバーの依存関係をインストール
+uv sync
 if [ $? -eq 0 ]; then
-    echo "✅ MySQL MCPサーバーのインストールが完了しました。"
+    echo "✅ Python環境のセットアップが完了しました。"
 else
-    echo "❌ MySQL MCPサーバーのインストールに失敗しました。"
+    echo "❌ Python環境のセットアップに失敗しました。"
     exit 1
 fi
+
+# 起動スクリプトに実行権限を付与
+chmod +x start-mysql-mcp.sh
 echo ""
 
 # Docker ComposeでMySQLを起動
@@ -85,6 +95,15 @@ for i in {1..5}; do
         fi
     fi
 done
+echo ""
+
+# MCPサーバーのテスト
+echo "🔍 MCP サーバーをテストしています..."
+if MYSQL_HOST=localhost MYSQL_PORT=3306 MYSQL_USER=demo_user MYSQL_PASSWORD=demo_password MYSQL_DATABASE=demo_db timeout 5 uv run mysql_mcp_server > /dev/null 2>&1; then
+    echo "✅ MCP サーバーが正常に動作しています。"
+else
+    echo "⚠️  MCP サーバーのテストをスキップしました。VS Code再起動後に動作確認してください。"
+fi
 echo ""
 
 # データベース構造の確認
