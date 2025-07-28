@@ -1,21 +1,15 @@
-
 {
   "servers": {
     "mysql": {
-        "command": "uv",
-        "args": [
-            "--directory",
-            "/Users/sato.tomoki/Documents/generative_ai_work/github-copilot-demo",
-            "run",
-            "mysql_mcp_server"
-        ],
-        "env": {
-            "MYSQL_HOST": "localhost",
-            "MYSQL_PORT": "3306",
-            "MYSQL_USER": "demo_user",
-            "MYSQL_PASSWORD": "demo_password",
-            "MYSQL_DATABASE": "demo_db"
-        }
+      "command": "docker",
+      "args": [
+        "exec",
+        "-i",
+        "mysql-mcp-server",
+        "uv",
+        "run",
+        "mysql_mcp_server"
+      ]
     }
   }
 }

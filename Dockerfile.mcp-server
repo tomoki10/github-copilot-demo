@@ -1,0 +1,38 @@
+# Dockerfile for MySQL MCP Server
+FROM python:3.11-slim
+
+# 作業ディレクトリの設定
+WORKDIR /app
+
+# システム依存関係のインストール
+RUN apt-get update && apt-get install -y \
+    curl \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+# uvのインストール
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+ENV PATH="/root/.local/bin:$PATH"
+
+# プロジェクトファイルをコピー
+COPY pyproject.toml uv.lock ./
+COPY README.md ./
+COPY mysql_mcp_demo/ ./mysql_mcp_demo/
+
+# 依存関係のインストール
+RUN uv sync --no-dev
+
+# 実行ユーザーの作成
+RUN useradd -m -u 1000 mcpuser && \
+    chown -R mcpuser:mcpuser /app
+USER mcpuser
+
+# ログディレクトリの作成
+RUN mkdir -p /app/logs
+
+# ヘルスチェック
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD uv run python -c "import mysql.connector; print('OK')" || exit 1
+
+# MCPサーバーの起動
+CMD ["uv", "run", "mysql_mcp_server"]

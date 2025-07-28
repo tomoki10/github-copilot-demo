@@ -19,14 +19,35 @@
 
 ## 🚀 セットアップ
 
-### 1. 自動セットアップ（推奨）
+### オプション1: Docker版（推奨）
+
+完全にコンテナ化された環境で実行します：
 
 ```bash
-chmod +x setup.sh
-./setup.sh
+# Docker版MCPサーバーを起動
+./start-mysql-mcp-docker.sh
+
+# Docker版設定に切り替え
+./switch-mcp-mode.sh docker
+
+# 環境テスト
+./test-docker-env.sh
 ```
 
-### 2. 手動セットアップ
+### オプション2: ローカル版
+
+ローカル環境でMCPサーバーを実行します：
+
+```bash
+# 自動セットアップ
+chmod +x setup.sh
+./setup.sh
+
+# またはローカル版設定に切り替え
+./switch-mcp-mode.sh local
+```
+
+### オプション3: 手動セットアップ
 
 ```bash
 # MySQL MCPサーバーをインストール
@@ -39,7 +60,7 @@ docker-compose up -d
 docker exec mysql-mcp-demo mysql -u demo_user -pdemo_password -e "SHOW DATABASES;"
 ```
 
-### 3. VS Codeを再起動
+### VS Codeを再起動
 
 設定を反映させるため、VS Codeを再起動してください。
 
@@ -87,6 +108,20 @@ GitHub Copilot Chatで以下のようなクエリを試してみてください�
 
 ## 🛠️ 設定詳細
 
+### 実行モード
+
+#### Docker版（推奨）
+
+- **メリット**: 環境の一貫性、依存関係の隔離、簡単なデプロイ
+- **構成**: MySQL + MCPサーバー両方をコンテナで実行
+- **設定ファイル**: `.vscode/mcp.docker.json`
+
+#### ローカル版
+
+- **メリット**: 軽量、デバッグが簡単
+- **構成**: MySQLはコンテナ、MCPサーバーはローカル実行
+- **設定ファイル**: `.vscode/mcp.json`
+
 ### Docker Compose設定
 
 ```yaml
@@ -99,19 +134,53 @@ services:
       MYSQL_DATABASE: demo_db
       MYSQL_USER: demo_user
       MYSQL_PASSWORD: demo_password
+  
+  mcp-server:  # Docker版でのみ使用
+    build:
+      dockerfile: Dockerfile.mcp-server
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_USER: demo_user
+      MYSQL_PASSWORD: demo_password
+      MYSQL_DATABASE: demo_db
 ```
 
 ### VS Code設定
 
+#### Docker版
+
 ```json
 {
-  "github.copilot.chat.experimental.mcpServers": {
+  "servers": {
     "mysql": {
-      "command": "npx",
+      "command": "docker",
       "args": [
-        "@modelcontextprotocol/server-mysql",
-        "mysql://demo_user:demo_password@localhost:3306/demo_db"
+        "exec", "-i", "mysql-mcp-server",
+        "uv", "run", "mysql_mcp_server"
       ]
+    }
+  }
+}
+```
+
+#### ローカル版
+
+```json
+{
+  "servers": {
+    "mysql": {
+      "command": "uv",
+      "args": [
+        "--directory", "/path/to/project",
+        "run", "mysql_mcp_server"
+      ],
+      "env": {
+        "MYSQL_HOST": "localhost",
+        "MYSQL_PORT": "3306",
+        "MYSQL_USER": "demo_user",
+        "MYSQL_PASSWORD": "demo_password",
+        "MYSQL_DATABASE": "demo_db"
+      }
     }
   }
 }
@@ -119,22 +188,28 @@ services:
 
 ## 🔧 管理コマンド
 
-### データベース管理
+### 環境切り替え
 
 ```bash
-# MySQLに直接接続
-docker exec -it mysql-mcp-demo mysql -u demo_user -pdemo_password demo_db
+# Docker版に切り替え
+./switch-mcp-mode.sh docker
 
-# ログの確認
-docker-compose logs mysql
+# ローカル版に切り替え
+./switch-mcp-mode.sh local
 
-# コンテナの状態確認
-docker-compose ps
+# 現在の設定確認
+./switch-mcp-mode.sh
 ```
 
-### 停止・再起動
+### Docker版管理
 
 ```bash
+# 起動
+./start-mysql-mcp-docker.sh
+
+# 環境テスト
+./test-docker-env.sh
+
 # 停止
 docker-compose down
 
@@ -146,6 +221,34 @@ docker-compose restart
 
 # 再構築
 docker-compose up -d --build
+
+# ログ確認
+docker-compose logs
+docker-compose logs mcp-server
+docker-compose logs mysql
+```
+
+### ローカル版管理
+
+```bash
+# 起動
+./start-mysql-mcp.sh
+
+# 環境テスト
+./test-env.sh
+```
+
+### データベース管理
+
+```bash
+# MySQLに直接接続
+docker exec -it mysql-mcp-demo mysql -u demo_user -pdemo_password demo_db
+
+# データベースステータス確認
+docker exec mysql-mcp-demo mysqladmin status -u demo_user -pdemo_password
+
+# コンテナの状態確認
+docker-compose ps
 ```
 
 ## 🐛 トラブルシューティング
