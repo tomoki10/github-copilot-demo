@@ -25,7 +25,7 @@ elif [ "$1" = "local" ]; then
         "command": "uv",
         "args": [
             "--directory",
-            "/Users/sato.tomoki/Documents/generative_ai_work/github-copilot-demo",
+            "/Users/hoge/Documents/generative_ai_work/github-copilot-demo",
             "run",
             "mysql_mcp_server"
         ],
