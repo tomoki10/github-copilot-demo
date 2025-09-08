@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "mysql": {
+      "command": "docker",
+      "args": [
+        "exec",
+        "-i",
+        "mysql-mcp-server",
+        "uv",
+        "run",
+        "mysql_mcp_server"
+      ]
+    }
+  }
+}

@@ -1,9 +1,9 @@
--- Initial database setup for GitHub Copilot MySQL MCP Demo
+-- GitHub Copilot MySQL MCP Demo 用の初期データベース設定
 
 CREATE DATABASE IF NOT EXISTS demo_db;
 USE demo_db;
 
--- Users table
+-- ユーザーテーブル
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -13,7 +13,7 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Products table
+-- 商品テーブル
 CREATE TABLE products (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -24,7 +24,7 @@ CREATE TABLE products (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Orders table
+-- 注文テーブル
 CREATE TABLE orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
@@ -37,26 +37,26 @@ CREATE TABLE orders (
     FOREIGN KEY (product_id) REFERENCES products(id)
 );
 
--- Sample user data
+-- サンプルユーザーデータ
 INSERT INTO users (name, email, age, department) VALUES 
-('Taro Tanaka', 'tanaka@example.com', 28, 'Development'),
-('Hanako Sato', 'sato@example.com', 32, 'Marketing'),
-('Ichiro Suzuki', 'suzuki@example.com', 25, 'Sales'),
-('Misaki Takahashi', 'takahashi@example.com', 29, 'Design'),
-('Kenta Yamada', 'yamada@example.com', 35, 'Development');
+('田中太郎', 'tanaka@example.com', 28, '開発部'),
+('佐藤花子', 'sato@example.com', 32, 'マーケティング部'),
+('鈴木一郎', 'suzuki@example.com', 25, '営業部'),
+('高橋美咲', 'takahashi@example.com', 29, 'デザイン部'),
+('山田健太', 'yamada@example.com', 35, '開発部');
 
--- Sample product data
+-- サンプル商品データ
 INSERT INTO products (name, price, stock, category, description) VALUES 
-('MacBook Pro', 199800.00, 10, 'Laptop', 'Latest MacBook Pro with M3 chip'),
-('Wireless Mouse', 2980.00, 50, 'Peripherals', 'High-precision wireless mouse'),
-('Mechanical Keyboard', 12800.00, 25, 'Peripherals', 'Mechanical keyboard with great tactile feel'),
-('4K Monitor', 35900.00, 15, 'Monitor', '27-inch 4K resolution monitor'),
-('Web Camera', 8900.00, 30, 'Peripherals', 'Full HD web camera'),
-('Smartphone', 89800.00, 20, 'Smartphone', 'Latest flagship smartphone model'),
-('Tablet', 45600.00, 18, 'Tablet', '10-inch tablet'),
-('Headphones', 15400.00, 40, 'Audio', 'Noise-canceling headphones');
+('MacBook Pro', 199800.00, 10, 'ノートPC', '最新のM3チップ搭載のノートパソコン'),
+('ワイヤレスマウス', 2980.00, 50, '周辺機器', '高精度なワイヤレスマウス'),
+('メカニカルキーボード', 12800.00, 25, '周辺機器', '打鍵感の良いメカニカルキーボード'),
+('4Kモニター', 35900.00, 15, 'モニター', '27インチ4K解像度モニター'),
+('Webカメラ', 8900.00, 30, '周辺機器', 'フルHD対応Webカメラ'),
+('スマートフォン', 89800.00, 20, 'スマートフォン', '最新のフラッグシップモデル'),
+('タブレット', 45600.00, 18, 'タブレット', '10インチタブレット'),
+('ヘッドフォン', 15400.00, 40, 'オーディオ', 'ノイズキャンセリング機能付き');
 
--- Sample order data
+-- サンプル注文データ
 INSERT INTO orders (user_id, product_id, quantity, total_price, status) VALUES 
 (1, 1, 1, 199800.00, 'completed'),
 (2, 2, 2, 5960.00, 'completed'),
@@ -67,7 +67,7 @@ INSERT INTO orders (user_id, product_id, quantity, total_price, status) VALUES
 (2, 7, 1, 45600.00, 'shipped'),
 (3, 8, 1, 15400.00, 'completed');
 
--- Data verification
+-- データの確認
 SELECT 'Users Table:' as info;
 SELECT * FROM users;
 
@@ -77,7 +77,7 @@ SELECT * FROM products;
 SELECT 'Orders Table:' as info;
 SELECT * FROM orders;
 
--- Create view for convenient queries
+-- ビューの作成（便利なクエリ用）
 CREATE VIEW order_summary AS
 SELECT 
     o.id as order_id,

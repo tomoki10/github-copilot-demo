@@ -1,6 +1,17 @@
 # GitHub Copilot MySQL MCP Demo
 
-このプロジェクトは、GitHub CopilotでMySQL MCP（Model Context Protocol）を使用するデモです。GitHub Copilot ChatからMySQLデータベースに直接アクセスしてクエリを実行できます。
+このプロジェクトは、GitHub Copilot/Claude CodeでMySQL MCP（Model Context Protocol）を使用するデモです。GitHub Copilot Chat/Claude CodeからMySQLデータベースに直接アクセスしてクエリを実行できます。
+
+## 簡易手順
+
+```bash
+docker compose up -d
+claude
+# 接続確認
+/mcp
+# 実行テスト
+MCPを使ってユーザ情報を取得して
+```
 
 ## 🎯 概要
 
