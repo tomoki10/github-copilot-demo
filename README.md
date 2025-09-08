@@ -5,12 +5,16 @@
 ## 簡易手順
 
 ```bash
+# コンテナ起動
 docker compose up -d
 claude
 # 接続確認
 /mcp
 # 実行テスト
 MCPを使ってユーザ情報を取得して
+
+# コンテナ停止
+docker compose down -v
 ```
 
 ## 🎯 概要
